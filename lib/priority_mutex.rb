@@ -40,8 +40,11 @@ class PriorityMutex
 
   def synchronize(priority = 0)
     wait_for_resource_if_necessary(priority)
-    yield
-    release_resource
+    begin
+      yield
+    ensure
+      release_resource rescue nil
+    end
   end
 
   def locked?
