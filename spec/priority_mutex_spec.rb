@@ -112,4 +112,29 @@ describe 'PriorityMutex' do
     expect(completion_order.index(3)).to eq(completion_order.index(4) + 1)
   end
 
+  it 'should know when its locked' do
+    threads = []
+    pm = PriorityMutex.new
+
+    expect(pm).to_not be_locked
+
+    # So let's pile up 10 low priority threads to run every second
+    10.times do
+      threads << Thread.new do
+        pm.synchronize(1) { sleep 0.05 }
+      end
+    end
+
+    # The above will run for 0.5 seconds, ensure its locked during that timeframe
+    3.times do
+      sleep 0.1
+      expect(pm).to be_locked
+    end
+
+    threads.each &:join
+
+    # After the threads are done, it should be unlocked
+    expect(pm).to_not be_locked
+  end
+
 end

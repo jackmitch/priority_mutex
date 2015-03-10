@@ -44,6 +44,10 @@ class PriorityMutex
     release_resource
   end
 
+  def locked?
+    @resource_active || @pq.size > 0
+  end
+
 private
 
   def wait_for_resource_if_necessary(priority)
