@@ -8,4 +8,4 @@ Using a PriorityMutex, you can now allow a high priority thread to "jump in line
 
 ## License & Notes
 
-The MIT License - Copyright (c) 2012 [Mike Jarema](http://mikejarema.com)
+The MIT License - Copyright (c) 2015 [Mike Jarema](http://mikejarema.com)
