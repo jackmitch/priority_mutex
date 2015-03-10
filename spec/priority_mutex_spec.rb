@@ -144,11 +144,11 @@ describe 'PriorityMutex' do
     sm = Mutex.new # "Standard" Mutex
     pm = PriorityMutex.new
 
-    # Basically we hammer the PriorityMutex by creating as many Threads as the system
-    # can handle and rely on a native Mutex to ensure we don't permit multiple threads
+    # Basically we hammer the PriorityMutex by creating a bunch of Threads very
+    # quickly and rely on a native Mutex to ensure we don't permit multiple threads
     # into the synchronization block at once
     begin
-      while true do
+      2000.times do
         threads << Thread.new do
           pm.synchronize(rand(10)) do
             if sm.locked?
