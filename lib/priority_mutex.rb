@@ -73,15 +73,12 @@ private
   end
 
   def release_resource
-    next_waiter = nil
-
     @pq_mutex.synchronize do
-      @resource_active = false
-      next_waiter = @pq.pop
-    end
-
-    if next_waiter
-      next_waiter.resume
+      if next_waiter = @pq.pop
+        next_waiter.resume
+      else
+        @resource_active = false
+      end
     end
   end
 

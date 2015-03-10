@@ -137,4 +137,37 @@ describe 'PriorityMutex' do
     expect(pm).to_not be_locked
   end
 
+  it 'should really not let multiple thread access the shared resource simultaneously' do
+    threads = []
+    standard_mutex_locked_count = 0
+
+    sm = Mutex.new # "Standard" Mutex
+    pm = PriorityMutex.new
+
+    # Basically we hammer the PriorityMutex by creating as many Threads as the system
+    # can handle and rely on a native Mutex to ensure we don't permit multiple threads
+    # into the synchronization block at once
+    begin
+      while true do
+        threads << Thread.new do
+          pm.synchronize(rand(10)) do
+            if sm.locked?
+              # puts "Uh-oh, mutex was locked"
+              standard_mutex_locked_count += 1
+            end
+            sm.synchronize { sleep 0.001 }
+          end
+        end
+      end
+
+    rescue ThreadError => e
+      # puts "Was able to create #{threads.count} threads before failure"
+
+    end
+
+    threads.each &:join
+
+    expect(standard_mutex_locked_count).to eq(0)
+  end
+
 end
