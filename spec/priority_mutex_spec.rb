@@ -22,6 +22,7 @@ describe 'PriorityMutex' do
         if i.zero?
           pm.synchronize do
             q.deq
+            sleep 0.1
             # puts "Starting..."
           end
         else
@@ -67,47 +68,47 @@ describe 'PriorityMutex' do
       threads << Thread.new do
         pm.synchronize(1) do
           completion_order << 1
-          sleep 0.05
+          sleep 0.1
         end
       end
     end
 
     # Wait a moment then add a medium priority thread, it should run next
     threads << Thread.new do
-      sleep 0.125
+      sleep 0.25
       med_queued_at = Time.now.to_f
       pm.synchronize(2) do                # medium = priority of 2
         med_executed_at = Time.now.to_f
         completion_order << 2
-        sleep 0.05
+        sleep 0.1
       end
     end
 
     # Wait a bit longer then add high and max priority thread, high should preempt medium
     threads << Thread.new do
-      sleep 0.22
+      sleep 0.55
       high_queued_at = Time.now.to_f
       pm.synchronize(3) do                # high = priority of 3
         high_executed_at = Time.now.to_f
         completion_order << 3
-        sleep 0.05
+        sleep 0.1
       end
     end
     threads << Thread.new do
-      sleep 0.23 # Just after the high thread
+      sleep 0.56 # Just after the high thread
       max_queued_at = Time.now.to_f
       pm.synchronize(4) do                # max = priority of 4
         max_executed_at = Time.now.to_f
         completion_order << 4
-        sleep 0.05
+        sleep 0.1
       end
     end
 
     threads.each &:join
 
-    expect(med_executed_at - med_queued_at).to be <= (0.05 + 0.01)   # Some tolerance added for overhead
-    expect(high_executed_at - high_queued_at).to be <= (0.1 + 0.01)  # Some tolerance added for overhead
-    expect(max_executed_at - max_queued_at).to be <= (0.05 + 0.01)   # Some tolerance added for overhead
+    expect(med_executed_at  - med_queued_at ).to be < 0.1 + 0.05  # one cycle plus small tolerance
+    expect(high_executed_at - high_queued_at).to be < 0.2 + 0.05  # two cycles plus small tolerance
+    expect(max_executed_at  - max_queued_at ).to be < 0.1 + 0.05  # one cycle plus small tolerance
 
     expect(completion_order.index(3)).to eq(completion_order.index(4) + 1)
   end
