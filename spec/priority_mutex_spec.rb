@@ -22,7 +22,7 @@ describe 'PriorityMutex' do
         if i.zero?
           pm.synchronize do
             q.deq
-            sleep 0.1
+            sleep 1.0
             # puts "Starting..."
           end
         else
