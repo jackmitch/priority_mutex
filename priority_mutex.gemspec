@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
   s.files         = Dir.glob("{lib}/**/*") + %w(LICENSE README.md VERSION)
   s.homepage      = %q{http://github.com/mikejarema/priority_mutex}
   s.require_paths = ["lib"]
-  s.add_runtime_dependency "rake", '~> 10'
   s.add_runtime_dependency "pqueue", '~> 2'
+  s.add_development_dependency "rake", '~> 10'
   s.add_development_dependency "rspec", '~> 3'
 end
